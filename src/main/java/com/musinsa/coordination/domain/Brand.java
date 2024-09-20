@@ -20,5 +20,23 @@ public class Brand {
     private String brandName;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private UseYn useYn;
+
+    public static Brand createBrand(String brandName) {
+        Brand brand = new Brand();
+
+        brand.brandName = brandName;
+        brand.useYn= UseYn.Y;
+
+        return brand;
+    }
+
+    public void changeBrand(String brandName) {
+        this.brandName = brandName;
+    }
+
+    public void deleteBrand() {
+        this.useYn = UseYn.N;
+    }
 }

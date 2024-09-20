@@ -10,7 +10,7 @@ import java.util.Arrays;
 @Getter
 public enum Category {
     TOP("상의"),
-    OUTER("아우터"),
+    OUTERWEAR("아우터"),
     PANTS("바지"),
     SNEAKERS("스니커즈"),
     BAG("가방"),
