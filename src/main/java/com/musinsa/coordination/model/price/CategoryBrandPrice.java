@@ -1,5 +1,6 @@
 package com.musinsa.coordination.model.price;
 
+import com.musinsa.coordination.domain.Product;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +15,13 @@ public class CategoryBrandPrice {
 
     private long price;
 
-    public static CategoryBrandPrice from() {
+    public static CategoryBrandPrice from(Product product) {
 
         CategoryBrandPrice categoryBrandPrice = new CategoryBrandPrice();
 
-        categoryBrandPrice.categoryName = "상의";
-        categoryBrandPrice.brandName = "C";
-        categoryBrandPrice.price = 10000;
+        categoryBrandPrice.categoryName = product.getCategory().getDesc();
+        categoryBrandPrice.brandName = product.getBrandName();
+        categoryBrandPrice.price = product.getPrice();
 
         return categoryBrandPrice;
     }

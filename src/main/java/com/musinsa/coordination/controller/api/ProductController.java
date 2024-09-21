@@ -3,7 +3,7 @@ package com.musinsa.coordination.controller.api;
 import com.musinsa.coordination.domain.Brand;
 import com.musinsa.coordination.exception.BindingResultException;
 import com.musinsa.coordination.model.dto.ProductDto;
-import com.musinsa.coordination.model.dto.ProductInsertDto;
+import com.musinsa.coordination.model.request.ProductInsertRequest;
 import com.musinsa.coordination.service.BrandService;
 import com.musinsa.coordination.service.ProductService;
 import jakarta.validation.Valid;
@@ -33,36 +33,36 @@ public class ProductController {
     }
 
     @PostMapping("/api/product")
-    public ResponseEntity<Boolean> insertProduct(@RequestBody @Valid ProductInsertDto dto,
+    public ResponseEntity<Boolean> insertProduct(@RequestBody @Valid ProductInsertRequest productInsertRequest,
                                                  BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
         }
 
-        Brand brand = brandService.findBrand(dto.getBrandId());
+        Brand brand = brandService.findBrand(productInsertRequest.getBrandId());
 
-        productService.insertProduct(dto.getProductName(),
+        productService.insertProduct(productInsertRequest.getProductName(),
                 brand,
-                dto.getCategory(),
-                dto.getPrice());
+                productInsertRequest.getCategory(),
+                productInsertRequest.getPrice());
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
 
     @PutMapping("/api/product")
-    public ResponseEntity<Boolean> updateProduct(@RequestBody @Valid ProductInsertDto dto,
+    public ResponseEntity<Boolean> updateProduct(@RequestBody @Valid ProductInsertRequest productInsertRequest,
                                                  BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
         }
 
-        Brand brand = brandService.findBrand(dto.getBrandId());
+        Brand brand = brandService.findBrand(productInsertRequest.getBrandId());
 
-        productService.updateProduct(dto.getProductId(),
-                dto.getProductName(),
+        productService.updateProduct(productInsertRequest.getProductId(),
+                productInsertRequest.getProductName(),
                 brand,
-                dto.getCategory(),
-                dto.getPrice());
+                productInsertRequest.getCategory(),
+                productInsertRequest.getPrice());
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

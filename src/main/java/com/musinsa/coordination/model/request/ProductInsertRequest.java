@@ -1,4 +1,4 @@
-package com.musinsa.coordination.model.dto;
+package com.musinsa.coordination.model.request;
 
 import com.musinsa.coordination.type.Category;
 import jakarta.persistence.EnumType;
@@ -13,7 +13,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProductInsertDto {
+public class ProductInsertRequest {
 
     private Long productId;
 

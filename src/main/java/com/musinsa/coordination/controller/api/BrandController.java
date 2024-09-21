@@ -2,7 +2,7 @@ package com.musinsa.coordination.controller.api;
 
 import com.musinsa.coordination.exception.BindingResultException;
 import com.musinsa.coordination.exception.NameException;
-import com.musinsa.coordination.model.dto.BrandDto;
+import com.musinsa.coordination.model.request.BrandRequest;
 import com.musinsa.coordination.service.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ public class BrandController {
     private final BrandService brandService;
 
     @GetMapping("/api/brands")
-    public ResponseEntity<List<BrandDto>> getBrands() {
-        List<BrandDto> brandList= brandService.findAllUseBrand().stream()
-                .map(BrandDto::toDto)
+    public ResponseEntity<List<BrandRequest>> getBrands() {
+        List<BrandRequest> brandList= brandService.findAllUseBrand().stream()
+                .map(BrandRequest::toDto)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(brandList);
@@ -38,17 +38,16 @@ public class BrandController {
         return ResponseEntity.ok(Boolean.TRUE);
     }
 
-
     @PutMapping("/api/brand")
-    public ResponseEntity<Boolean> updateBrand(@RequestBody @Valid BrandDto brandDto,
+    public ResponseEntity<Boolean> updateBrand(@RequestBody @Valid BrandRequest brandRequest,
                                                BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
         }
 
-        this.brandNameVaildation(brandDto.getBrandName());
+        this.brandNameVaildation(brandRequest.getBrandName());
 
-        brandService.updateBrand(brandDto.getBrandId(), brandDto.getBrandName());
+        brandService.updateBrand(brandRequest.getBrandId(), brandRequest.getBrandName());
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

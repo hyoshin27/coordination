@@ -1,4 +1,4 @@
-package com.musinsa.coordination.model.dto;
+package com.musinsa.coordination.model.request;
 
 import com.musinsa.coordination.domain.Brand;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Getter
 @NoArgsConstructor
-public class BrandDto {
+public class BrandRequest {
 
     private Long brandId;
 
@@ -16,12 +16,12 @@ public class BrandDto {
     @Length(min = 1, max = 30, message = "브랜드 길이는 1~30자까지 입니다.")
     private String brandName;
 
-    public static BrandDto toDto(Brand brand){
-        BrandDto brandDto = new BrandDto();
+    public static BrandRequest toDto(Brand brand){
+        BrandRequest brandRequest = new BrandRequest();
 
-        brandDto.brandId = brand.getBrandId();
-        brandDto.brandName = brand.getBrandName();
+        brandRequest.brandId = brand.getBrandId();
+        brandRequest.brandName = brand.getBrandName();
 
-        return brandDto;
+        return brandRequest;
     }
 }
