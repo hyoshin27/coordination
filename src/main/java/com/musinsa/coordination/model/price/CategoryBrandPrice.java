@@ -10,15 +10,12 @@ import lombok.NoArgsConstructor;
 public class CategoryBrandPrice {
 
     private String categoryName;
-
     private String brandName;
-
     private long price;
 
     public static CategoryBrandPrice from(Product product) {
 
         CategoryBrandPrice categoryBrandPrice = new CategoryBrandPrice();
-
         categoryBrandPrice.categoryName = product.getCategory().getDesc();
         categoryBrandPrice.brandName = product.getBrandName();
         categoryBrandPrice.price = product.getPrice();

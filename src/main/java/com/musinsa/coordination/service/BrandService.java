@@ -21,31 +21,31 @@ public class BrandService {
     }
 
     public void insertBrand(String brandName) {
+
         Brand brand = Brand.createBrand(brandName);
 
         brandRepository.save(brand);
     }
 
     public void updateBrand(long brandId, String brandName) {
-        Brand brand = this.findBrand(brandId);
 
+        Brand brand = this.findBrand(brandId);
         brand.changeBrand(brandName);
 
         brandRepository.save(brand);
     }
 
     public void deleteBrand(long brandId) {
-        Brand brand = this.findBrand(brandId);
 
+        Brand brand = this.findBrand(brandId);
         brand.deleteBrand();
 
         brandRepository.save(brand);
     }
 
     public Brand findBrand(long brandId) {
-        Brand brand = brandRepository.findById(brandId)
-                .orElseThrow(() -> new BrandNotFoundException("브랜드 정보가 잘못 되었습니다."));
 
-        return brand;
+        return brandRepository.findById(brandId)
+                .orElseThrow(() -> new BrandNotFoundException("브랜드 정보가 잘못 되었습니다."));
     }
 }

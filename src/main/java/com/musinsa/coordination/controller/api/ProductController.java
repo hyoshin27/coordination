@@ -1,76 +1,71 @@
 package com.musinsa.coordination.controller.api;
 
 import com.musinsa.coordination.domain.Brand;
-import com.musinsa.coordination.exception.BindingResultException;
-import com.musinsa.coordination.model.dto.ProductDto;
-import com.musinsa.coordination.model.request.ProductInsertRequest;
+import com.musinsa.coordination.model.response.ProductResponse;
+import com.musinsa.coordination.model.request.ProductDeleteRequest;
+import com.musinsa.coordination.model.request.ProductCreateRequest;
+import com.musinsa.coordination.model.request.ProductUpdateRequest;
+import com.musinsa.coordination.model.response.SuccessResponse;
 import com.musinsa.coordination.service.BrandService;
 import com.musinsa.coordination.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 public class ProductController {
-    private final ProductService productService;
 
+    private final ProductService productService;
     private final BrandService brandService;
 
     @GetMapping("/api/products")
-    public ResponseEntity<List<ProductDto>> getProducts() {
-        List<ProductDto> productList  = productService.findAllUseProduct()
+    public ResponseEntity<List<ProductResponse>> getProducts() {
+
+        List<ProductResponse> productList = productService.findAllUseProduct()
                 .stream()
-                .map(ProductDto::toDto)
-                .collect(Collectors.toList());
+                .map(ProductResponse::toDto)
+                .toList();
 
         return ResponseEntity.ok(productList);
     }
 
     @PostMapping("/api/product")
-    public ResponseEntity<Boolean> insertProduct(@RequestBody @Valid ProductInsertRequest productInsertRequest,
-                                                 BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
-        }
+    public ResponseEntity<SuccessResponse> insertProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest) {
 
-        Brand brand = brandService.findBrand(productInsertRequest.getBrandId());
-
-        productService.insertProduct(productInsertRequest.getProductName(),
+        Brand brand = brandService.findBrand(productCreateRequest.getBrandId());
+        productService.insertProduct(
                 brand,
-                productInsertRequest.getCategory(),
-                productInsertRequest.getPrice());
+                productCreateRequest.getProductName(),
+                productCreateRequest.getCategory(),
+                productCreateRequest.getPrice()
+        );
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 
     @PutMapping("/api/product")
-    public ResponseEntity<Boolean> updateProduct(@RequestBody @Valid ProductInsertRequest productInsertRequest,
-                                                 BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
-        }
+    public ResponseEntity<SuccessResponse> updateProduct(@RequestBody @Valid ProductUpdateRequest productUpdateRequest) {
 
-        Brand brand = brandService.findBrand(productInsertRequest.getBrandId());
-
-        productService.updateProduct(productInsertRequest.getProductId(),
-                productInsertRequest.getProductName(),
+        Brand brand = brandService.findBrand(productUpdateRequest.getBrandId());
+        productService.updateProduct(
                 brand,
-                productInsertRequest.getCategory(),
-                productInsertRequest.getPrice());
+                productUpdateRequest.getProductId(),
+                productUpdateRequest.getProductName(),
+                productUpdateRequest.getCategory(),
+                productUpdateRequest.getPrice()
+        );
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 
     @DeleteMapping("/api/product")
-    public ResponseEntity<Boolean> deleteProduct(@RequestBody long productId) {
-        productService.deleteProduct(productId);
+    public ResponseEntity<SuccessResponse> deleteProduct(@RequestBody ProductDeleteRequest productDeleteRequest) {
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        productService.deleteProduct(productDeleteRequest.getProductId());
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 }

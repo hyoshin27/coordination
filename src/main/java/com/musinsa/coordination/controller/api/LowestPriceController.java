@@ -1,8 +1,8 @@
 package com.musinsa.coordination.controller.api;
 
-import com.musinsa.coordination.model.dto.LowestPriceBrandDto;
-import com.musinsa.coordination.model.dto.LowestPriceCategoriesDto;
-import com.musinsa.coordination.model.dto.MinMaxCategoryDto;
+import com.musinsa.coordination.model.response.LowestPriceBrandResponse;
+import com.musinsa.coordination.model.response.LowestPriceCategoriesResponse;
+import com.musinsa.coordination.model.response.MinMaxCategoryResponse;
 
 import com.musinsa.coordination.model.price.CategoriesBrandPrice;
 import com.musinsa.coordination.model.price.CategoryBrandPrice;
@@ -23,14 +23,14 @@ public class LowestPriceController {
     private final LowestPriceService lowestPriceService;
 
     @GetMapping("/api/category/lowest-price")
-    public ResponseEntity<LowestPriceCategoriesDto> getLowestPriceByCategory() {
+    public ResponseEntity<LowestPriceCategoriesResponse> getLowestPriceByCategory() {
+
         List<CategoryBrandPrice> categoryBrandPrices = lowestPriceService.getLowByPrice();
 
         long totalPrice = categoryBrandPrices.stream()
                 .mapToLong(CategoryBrandPrice::getPrice)
                 .sum();
-
-        LowestPriceCategoriesDto dto = LowestPriceCategoriesDto.builder()
+        LowestPriceCategoriesResponse dto = LowestPriceCategoriesResponse.builder()
                 .categoryBrandPrices(categoryBrandPrices)
                 .totalPrice(totalPrice)
                 .build();
@@ -39,10 +39,10 @@ public class LowestPriceController {
     }
 
     @GetMapping("/api/brand/lowest-price")
-    public ResponseEntity<LowestPriceBrandDto> getLowestPriceByBrand() {
-        CategoriesBrandPrice categoriesBrandPrice = lowestPriceService.getLowByBrand();
+    public ResponseEntity<LowestPriceBrandResponse> getLowestPriceByBrand() {
 
-        LowestPriceBrandDto dto = LowestPriceBrandDto.builder()
+        CategoriesBrandPrice categoriesBrandPrice = lowestPriceService.getLowByBrand();
+        LowestPriceBrandResponse dto = LowestPriceBrandResponse.builder()
                 .lowestPrice(categoriesBrandPrice)
                 .build();
 
@@ -50,10 +50,10 @@ public class LowestPriceController {
     }
 
     @GetMapping("/api/category/min-max-price")
-    public ResponseEntity<MinMaxCategoryDto> getMinMaxPriceByCategory(@RequestParam String categoryName) {
-        Category category = Category.fromValue(categoryName);
+    public ResponseEntity<MinMaxCategoryResponse> getMinMaxPriceByCategory(@RequestParam String categoryName) {
 
-        MinMaxCategoryDto dto = lowestPriceService.getMinMaxPriceByCategory(category);
+        Category category = Category.fromValue(categoryName);
+        MinMaxCategoryResponse dto = lowestPriceService.getMinMaxPriceByCategory(category);
 
         return ResponseEntity.ok(dto);
     }

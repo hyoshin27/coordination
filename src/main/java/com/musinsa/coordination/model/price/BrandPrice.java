@@ -9,15 +9,14 @@ import lombok.NoArgsConstructor;
 public class BrandPrice {
 
     private String brandName;
-
     private long price;
 
-    public static BrandPrice from (String brandName,
-                                   long price) {
-        BrandPrice brandPrice = new BrandPrice();
+    public static BrandPrice from(String brandName,
+                                  long price) {
 
-        brandPrice.brandName  = brandName;
-        brandPrice.price  = price;
+        BrandPrice brandPrice = new BrandPrice();
+        brandPrice.brandName = brandName;
+        brandPrice.price = price;
 
         return brandPrice;
     }

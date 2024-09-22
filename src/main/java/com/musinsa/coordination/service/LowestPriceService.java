@@ -3,7 +3,7 @@ package com.musinsa.coordination.service;
 import com.musinsa.coordination.domain.Brand;
 import com.musinsa.coordination.domain.Product;
 import com.musinsa.coordination.exception.ProductNotFoundException;
-import com.musinsa.coordination.model.dto.MinMaxCategoryDto;
+import com.musinsa.coordination.model.response.MinMaxCategoryResponse;
 import com.musinsa.coordination.model.price.BrandPrice;
 import com.musinsa.coordination.model.price.CategoriesBrandPrice;
 import com.musinsa.coordination.model.price.CategoryBrandPrice;
@@ -26,80 +26,70 @@ public class LowestPriceService {
     public List<CategoryBrandPrice> getLowByPrice() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
 
-        if(products.isEmpty()) {
-            throw new ProductNotFoundException("상품이 없습니다.");
-        }
-
         Map<Category, List<Product>> productByCategory = products.stream()
                 .collect(Collectors.groupingBy(Product::getCategory));
 
-
-        List<Product> optionalStream = productByCategory.values()
+        List<Product> minProducts = productByCategory.values()
                 .stream()
-                .map(productList -> productList.stream().min((product1, product2) -> (int) (product1.getPrice() - product2.getPrice()) ).get())
-                .collect(Collectors.toList());
+                .map(this::findMinProduct)
+                .toList();
 
         List<CategoryBrandPrice> categoryBrandPrices = new ArrayList<>();
 
-        optionalStream.forEach(product -> {
-            categoryBrandPrices.add(CategoryBrandPrice.from(product));
-        });
+        minProducts.forEach(product -> categoryBrandPrices.add(CategoryBrandPrice.from(product)));
 
         return categoryBrandPrices;
     }
 
+    private Product findMinProduct(List<Product> productList) {
+        return productList.stream().min(
+                (product1, product2) -> (int) (product1.getPrice() - product2.getPrice())
+        ).orElseThrow(() -> new ProductNotFoundException("최저가격을 찾을수 없습니다."));
+    }
+
     public CategoriesBrandPrice getLowByBrand() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
-
-        if(products.isEmpty()) {
-            throw new ProductNotFoundException("상품이 없습니다.");
-        }
 
         Map<Brand, List<Product>> productByBrand = products.stream()
                 .collect(Collectors.groupingBy(Product::getBrand));
 
         Map.Entry<Brand, List<Product>> brandListEntry = productByBrand.entrySet()
                 .stream()
-                .min((product1, product2) -> (int) (product1.getValue().stream().mapToLong(Product::getPrice).sum()
-                        - product2.getValue().stream().mapToLong(Product::getPrice).sum())).get();
+                .min(this.priceComparator())
+                .orElseThrow(() -> new ProductNotFoundException("브랜드 상품을 찾을수 없습니다."));
 
         List<CategoryPrice> categoryPriceList = new ArrayList<>();
+        brandListEntry.getValue()
+                .forEach((product -> categoryPriceList.add(CategoryPrice.from(product))));
 
-        brandListEntry.getValue().forEach((product -> {
-            categoryPriceList.add(CategoryPrice.from(product));
-        }));
-
-        CategoriesBrandPrice categoriesBrandPrice = CategoriesBrandPrice.builder()
+        return CategoriesBrandPrice.builder()
                 .brandName(brandListEntry.getKey().getBrandName())
                 .categories(categoryPriceList)
                 .totalPrice(brandListEntry.getValue().stream().mapToLong(Product::getPrice).sum())
                 .build();
-
-        return categoriesBrandPrice;
     }
 
-    public MinMaxCategoryDto getMinMaxPriceByCategory(Category category) {
+    private Comparator<Map.Entry<Brand, List<Product>>> priceComparator() {
+        return (product1, product2) -> (int) (product1.getValue().stream().mapToLong(Product::getPrice).sum()
+                - product2.getValue().stream().mapToLong(Product::getPrice).sum());
+    }
+
+    public MinMaxCategoryResponse getMinMaxPriceByCategory(Category category) {
         List<Product> products = productRepository.findByCategoryEqualsAndBrand_UseYnOrderByProductIdAsc(
                 category, UseYn.Y);
 
-        if(products.isEmpty()) {
-            throw new ProductNotFoundException("상품이 없습니다.");
-        }
-
         Product minProduct = products.stream()
                 .min(Comparator.comparing(Product::getPrice))
-                .get();
+                .orElseThrow(() -> new ProductNotFoundException("최저 가격을 찾을수 없습니다."));
 
         Product maxProduct = products.stream()
                 .max(Comparator.comparing(Product::getPrice))
-                .get();
+                .orElseThrow(() -> new ProductNotFoundException("최대 가격을 찾을수 없습니다."));
 
-        MinMaxCategoryDto dto = MinMaxCategoryDto.builder()
+        return MinMaxCategoryResponse.builder()
                 .categoryName(category.getDesc())
                 .minPrice(BrandPrice.from(minProduct.getBrandName(), minProduct.getPrice()))
                 .maxPrice(BrandPrice.from(maxProduct.getBrandName(), maxProduct.getPrice()))
                 .build();
-
-        return dto;
     }
 }

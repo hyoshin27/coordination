@@ -1,8 +1,10 @@
 package com.musinsa.coordination.exception;
 
-public class CategoryNotFoundException extends RuntimeException {
+import com.musinsa.coordination.type.ResponseCode;
+
+public class CategoryNotFoundException extends AbstractException {
 
     public CategoryNotFoundException(String message) {
-        super(message);
+        super(ResponseCode.FAILURE, message);
     }
 }

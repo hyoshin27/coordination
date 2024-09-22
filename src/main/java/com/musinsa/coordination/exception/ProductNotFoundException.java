@@ -1,8 +1,10 @@
 package com.musinsa.coordination.exception;
 
-public class ProductNotFoundException extends RuntimeException {
+import com.musinsa.coordination.type.ResponseCode;
+
+public class ProductNotFoundException extends AbstractException {
 
     public ProductNotFoundException(String message) {
-        super(message);
+        super(ResponseCode.FAILURE, message);
     }
 }

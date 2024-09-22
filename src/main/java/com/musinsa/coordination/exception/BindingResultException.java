@@ -1,8 +1,10 @@
 package com.musinsa.coordination.exception;
 
-public class BindingResultException extends RuntimeException {
+import com.musinsa.coordination.type.ResponseCode;
+
+public class BindingResultException extends AbstractException {
 
     public BindingResultException(String message) {
-        super(message);
+        super(ResponseCode.FAILURE, message);
     }
 }

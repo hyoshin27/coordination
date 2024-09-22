@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table
 public class Brand {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long brandId;

@@ -1,8 +1,10 @@
 package com.musinsa.coordination.exception;
 
-public class BrandNotFoundException extends RuntimeException {
+import com.musinsa.coordination.type.ResponseCode;
+
+public class BrandNotFoundException extends AbstractException {
 
     public BrandNotFoundException(String message) {
-        super(message);
+        super(ResponseCode.FAILURE, message);
     }
 }

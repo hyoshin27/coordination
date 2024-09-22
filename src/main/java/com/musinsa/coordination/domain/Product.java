@@ -12,6 +12,7 @@ import java.util.Objects;
 @Entity
 @Table
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;

@@ -1,71 +1,55 @@
 package com.musinsa.coordination.controller.api;
 
-import com.musinsa.coordination.exception.BindingResultException;
-import com.musinsa.coordination.exception.NameException;
-import com.musinsa.coordination.model.request.BrandRequest;
+import com.musinsa.coordination.model.request.BrandCreateRequest;
+import com.musinsa.coordination.model.request.BrandDeleteRequest;
+import com.musinsa.coordination.model.request.BrandUpdateRequest;
+import com.musinsa.coordination.model.response.SuccessResponse;
 import com.musinsa.coordination.service.BrandService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 public class BrandController {
-    private final static int BRAND_NAME_MAX = 30;
 
     private final BrandService brandService;
 
     @GetMapping("/api/brands")
-    public ResponseEntity<List<BrandRequest>> getBrands() {
-        List<BrandRequest> brandList= brandService.findAllUseBrand().stream()
-                .map(BrandRequest::toDto)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<BrandUpdateRequest>> getBrands() {
+
+        List<BrandUpdateRequest> brandList = brandService.findAllUseBrand()
+                .stream()
+                .map(BrandUpdateRequest::toDto)
+                .toList();
 
         return ResponseEntity.ok(brandList);
     }
 
     @PostMapping("/api/brand")
-    public ResponseEntity<Boolean> insertBrands(@RequestBody String brandName) {
-        this.brandNameVaildation(brandName);
+    public ResponseEntity<SuccessResponse> insertBrands(@RequestBody @Valid BrandCreateRequest brandCreateRequest) {
 
-        brandService.insertBrand(brandName);
+        brandService.insertBrand(brandCreateRequest.getBrandName());
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 
     @PutMapping("/api/brand")
-    public ResponseEntity<Boolean> updateBrand(@RequestBody @Valid BrandRequest brandRequest,
-                                               BindingResult bindingResult) {
-        if(bindingResult.hasErrors()) {
-            throw new BindingResultException(bindingResult.getFieldErrors().get(0).getDefaultMessage());
-        }
+    public ResponseEntity<SuccessResponse> updateBrand(@RequestBody @Valid BrandUpdateRequest brandUpdateRequest) {
 
-        this.brandNameVaildation(brandRequest.getBrandName());
+        brandService.updateBrand(brandUpdateRequest.getBrandId(), brandUpdateRequest.getBrandName());
 
-        brandService.updateBrand(brandRequest.getBrandId(), brandRequest.getBrandName());
-
-        return ResponseEntity.ok(Boolean.TRUE);
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 
     @DeleteMapping("/api/brand")
-    public ResponseEntity<Boolean> deleteBrand(@RequestBody long brandId) {
-        brandService.deleteBrand(brandId);
+    public ResponseEntity<SuccessResponse> deleteBrand(@RequestBody @Valid BrandDeleteRequest brandDeleteRequest) {
 
-        return ResponseEntity.ok(Boolean.TRUE);
-    }
+        brandService.deleteBrand(brandDeleteRequest.getBrandId());
 
-    private void brandNameVaildation(String brandName) {
-        if(brandName.isEmpty()){
-            throw new NameException("브랜드 이름을 입력해주세요.");
-        }
-
-        if(brandName.length() > BRAND_NAME_MAX) {
-            throw new NameException("브랜드 이름은" + BRAND_NAME_MAX + "자까지 가능합니다.");
-        }
+        return ResponseEntity.ok(SuccessResponse.from("ok"));
     }
 }
