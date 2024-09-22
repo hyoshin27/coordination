@@ -13,8 +13,8 @@ class CoordinationConfig {
         return new OpenAPI()
                 .components(new Components())
                 .info(new Info()
-                        .title("Springdoc 테스트")
-                        .description("Springdoc을 사용한 Swagger UI 테스트")
+                        .title("Springdoc")
+                        .description("Springdoc을 사용한 Swagger UI")
                         .version("1.0.0"));
     }
 }

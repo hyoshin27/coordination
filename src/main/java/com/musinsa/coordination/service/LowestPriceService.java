@@ -25,8 +25,12 @@ public class LowestPriceService {
     private final ProductRepository productRepository;
 
     @Transactional(readOnly = true)
-    public List<CategoryBrandPrice> getLowByPrice() {
+    public List<CategoryBrandPrice> getLowPriceByCategory() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
+
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("최저가격을 찾을수 없습니다.");
+        }
 
         Map<Category, List<Product>> productByCategory = products.stream()
                 .collect(Collectors.groupingBy(Product::getCategory));
@@ -50,10 +54,15 @@ public class LowestPriceService {
     }
 
     @Transactional(readOnly = true)
-    public CategoriesBrandPrice getLowByBrand() {
+    public CategoriesBrandPrice getLowPriceByBrand() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
 
-        Map<Brand, List<Product>> productByBrand = products.stream()
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("최저가격을 찾을수 없습니다.");
+        }
+
+        Map<Brand, List<Product>> productByBrand = products
+                .stream()
                 .collect(Collectors.groupingBy(Product::getBrand));
 
         Map.Entry<Brand, List<Product>> brandListEntry = productByBrand.entrySet()
@@ -81,6 +90,10 @@ public class LowestPriceService {
     public MinMaxCategoryResponse getMinMaxPriceByCategory(Category category) {
         List<Product> products = productRepository.findByCategoryEqualsAndBrand_UseYnOrderByProductIdAsc(
                 category, UseYn.Y);
+
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("최저가격을 찾을수 없습니다.");
+        }
 
         Product minProduct = products.stream()
                 .min(Comparator.comparing(Product::getPrice))

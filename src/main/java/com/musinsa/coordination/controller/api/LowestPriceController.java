@@ -25,7 +25,7 @@ public class LowestPriceController {
     @GetMapping("/api/category/lowest-price")
     public ResponseEntity<LowestPriceCategoriesResponse> getLowestPriceByCategory() {
 
-        List<CategoryBrandPrice> categoryBrandPrices = lowestPriceService.getLowByPrice();
+        List<CategoryBrandPrice> categoryBrandPrices = lowestPriceService.getLowPriceByCategory();
 
         long totalPrice = categoryBrandPrices.stream()
                 .mapToLong(CategoryBrandPrice::getPrice)
@@ -41,7 +41,7 @@ public class LowestPriceController {
     @GetMapping("/api/brand/lowest-price")
     public ResponseEntity<LowestPriceBrandResponse> getLowestPriceByBrand() {
 
-        CategoriesBrandPrice categoriesBrandPrice = lowestPriceService.getLowByBrand();
+        CategoriesBrandPrice categoriesBrandPrice = lowestPriceService.getLowPriceByBrand();
         LowestPriceBrandResponse dto = LowestPriceBrandResponse.builder()
                 .lowestPrice(categoriesBrandPrice)
                 .build();
