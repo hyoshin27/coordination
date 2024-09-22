@@ -48,9 +48,10 @@ public class LowestPriceService {
     }
 
     private Product findMinProduct(List<Product> productList) {
-        return productList.stream().min(
-                (product1, product2) -> (int) (product1.getPrice() - product2.getPrice())
-        ).orElseThrow(() -> new ProductNotFoundException("최저가격을 찾을수 없습니다."));
+        return productList
+                .stream()
+                .min(Comparator.comparing(Product::getPrice))
+                .orElseThrow(() -> new ProductNotFoundException("최저가격을 찾을수 없습니다."));
     }
 
     @Transactional(readOnly = true)
