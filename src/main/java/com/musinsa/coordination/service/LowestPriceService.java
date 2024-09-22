@@ -13,6 +13,7 @@ import com.musinsa.coordination.type.Category;
 import com.musinsa.coordination.type.UseYn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class LowestPriceService {
 
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly = true)
     public List<CategoryBrandPrice> getLowByPrice() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
 
@@ -47,6 +49,7 @@ public class LowestPriceService {
         ).orElseThrow(() -> new ProductNotFoundException("최저가격을 찾을수 없습니다."));
     }
 
+    @Transactional(readOnly = true)
     public CategoriesBrandPrice getLowByBrand() {
         List<Product> products = productRepository.findAllByBrand_UseYn(UseYn.Y);
 
@@ -74,6 +77,7 @@ public class LowestPriceService {
                 - product2.getValue().stream().mapToLong(Product::getPrice).sum());
     }
 
+    @Transactional(readOnly = true)
     public MinMaxCategoryResponse getMinMaxPriceByCategory(Category category) {
         List<Product> products = productRepository.findByCategoryEqualsAndBrand_UseYnOrderByProductIdAsc(
                 category, UseYn.Y);

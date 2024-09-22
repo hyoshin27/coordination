@@ -9,6 +9,7 @@ import com.musinsa.coordination.type.Category;
 import com.musinsa.coordination.type.UseYn;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,11 +19,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Transactional(readOnly = true)
     public List<Product> findAllUseProduct() {
 
         return productRepository.findAllByBrand_UseYn(UseYn.Y);
     }
 
+    @Transactional
     public void insertProduct(Brand brand,
                               String productName,
                               Category category,
@@ -32,6 +35,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @Transactional
     public void updateProduct(Brand brand,
                               Long productId,
                               String productName,
@@ -44,6 +48,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @Transactional
     public void deleteProduct(long productId) {
 
         Product product = this.findProduct(productId);
