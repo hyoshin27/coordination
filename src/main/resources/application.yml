@@ -18,10 +18,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true      # 쿼리 로그 포맷 (정렬)
-        show_sql: true        # 쿼리 로그 출력
-#    defer-datasource-initialization: false
-#    sql:
-#      init:
-#        mode: false
+        format_sql: true
+        show_sql: true
 
+springdoc:
+  packages-to-scan: com.musinsa.coordination.controller.api
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha
