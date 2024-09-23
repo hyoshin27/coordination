@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.minBy;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class LowestPriceService {
         }
 
         Map<Category, List<Product>> productByCategory = products.stream()
-                .collect(Collectors.groupingBy(Product::getCategory));
+                .collect(groupingBy(Product::getCategory));
 
         List<Product> minProducts = productByCategory.values()
                 .stream()
@@ -64,9 +66,26 @@ public class LowestPriceService {
 
         Map<Brand, List<Product>> productByBrand = products
                 .stream()
-                .collect(Collectors.groupingBy(Product::getBrand));
+                .collect(groupingBy(Product::getBrand));
 
-        Map.Entry<Brand, List<Product>> brandListEntry = productByBrand.entrySet()
+        //상품이 추가 되었을 때 카테고리별 상품 1개만 찾는 로직 추가
+        Map<Brand, List<Product>> minProductByBrand = new HashMap<>();
+
+        for (Map.Entry<Brand, List<Product>> entry : productByBrand.entrySet()) {
+            Brand brand = entry.getKey();
+            List<Product> productList = entry.getValue();
+            Map<Category, Optional<Product>> minProductMap = productList.stream()
+                    .collect(groupingBy(Product::getCategory, minBy(Comparator.comparing(Product::getPrice))));
+
+            List<Product> minProducts = minProductMap.values()
+                    .stream()
+                    .map(Optional::get)
+                    .toList();
+
+            minProductByBrand.put(brand, minProducts);
+        }
+
+        Map.Entry<Brand, List<Product>> brandListEntry = minProductByBrand.entrySet()
                 .stream()
                 .min(this.priceComparator())
                 .orElseThrow(() -> new ProductNotFoundException("브랜드 상품을 찾을수 없습니다."));

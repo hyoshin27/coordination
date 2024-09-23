@@ -51,7 +51,7 @@ public class BrandService {
     @Transactional(readOnly = true)
     public Brand findBrand(long brandId) {
 
-        return brandRepository.findById(brandId)
+        return brandRepository.findByBrandIdEqualsAndUseYnEquals(brandId, UseYn.Y)
                 .orElseThrow(() -> new BrandNotFoundException("브랜드 정보가 잘못 되었습니다."));
     }
 }
